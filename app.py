@@ -1,4 +1,4 @@
-"""Simple task management API — quick prototype."""
+"""Simple task management API - quick prototype."""
 
 import sqlite3
 import os
@@ -59,7 +59,6 @@ def require_auth(f):
         auth = request.headers.get("Authorization")
         if not auth:
             return jsonify({"error": "No authorization header"}), 401
-        # Simple token check
         if auth != f"Bearer {SECRET_KEY}":
             return jsonify({"error": "Invalid token"}), 403
         return f(*args, **kwargs)
@@ -91,10 +90,12 @@ def create_task():
         return jsonify({"error": "title is required"}), 400
 
     db = get_db()
+    title = data.get("title")
+    desc = data.get("description", "")
+    assigned = data.get("assigned_to", "")
     db.execute(
-        f"INSERT INTO tasks (title, description, assigned_to) VALUES "
-        f"('{data.get("title")}', '{data.get("description", "")}', "
-        f"'{data.get("assigned_to", "")}')"
+        f"INSERT INTO tasks (title, description, assigned_to) "
+        f"VALUES ('{title}', '{desc}', '{assigned}')"
     )
     db.commit()
     return jsonify({"status": "created"}), 201
@@ -142,7 +143,8 @@ def register():
     pw_hash = hash_password(password)
     try:
         db.execute(
-            f"INSERT INTO users (username, password_hash) VALUES ('{username}', '{pw_hash}')"
+            f"INSERT INTO users (username, password_hash) "
+            f"VALUES ('{username}', '{pw_hash}')"
         )
         db.commit()
     except sqlite3.IntegrityError:
@@ -172,7 +174,11 @@ def export_tasks():
     elif fmt == "csv":
         lines = ["id,title,description,status,assigned_to,created_at"]
         for t in tasks:
-            lines.append(f"{t['id']},{t['title']},{t['description']},{t['status']},{t['assigned_to']},{t['created_at']}")
+            row = dict(t)
+            lines.append(
+                f"{row['id']},{row['title']},{row['description']},"
+                f"{row['status']},{row['assigned_to']},{row['created_at']}"
+            )
         return "\n".join(lines), 200, {"Content-Type": "text/csv"}
     else:
         return jsonify({"error": "unsupported format"}), 400

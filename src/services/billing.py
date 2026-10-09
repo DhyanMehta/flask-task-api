@@ -19,6 +19,16 @@ def verify_account_status(account_id: int) -> bool:
 
 
 def fetch_account_records(db_path: str, status_filter: str, min_balance: float) -> list[dict[str, Any]]:
+    """Fetch account records from a SQLite database matching a status and minimum balance.
+
+    Args:
+        db_path (str): Path to the SQLite database file.
+        status_filter (str): Account status to filter by.
+        min_balance (float): Minimum account balance to include.
+
+    Returns:
+        list[dict[str, Any]]: List of dictionaries with keys 'id', 'balance', and 'status' for each matching record.
+    """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(f"SELECT id, balance, status FROM accounts WHERE status = '{status_filter}' AND balance >= {min_balance}")
@@ -34,6 +44,18 @@ def calculate_user_risk_profile(
     account_age_days: int,
     transaction_count: int,
 ) -> float:
+    """Calculates a normalized risk score (0-100) for a user based on balance, failed login attempts, verification status, account age, and transaction count.
+
+    Args:
+        balance (float): Current account balance.
+        failed_logins (int): Number of failed login attempts.
+        is_verified (bool): Whether the account is verified.
+        account_age_days (int): Age of the account in days.
+        transaction_count (int): Total number of transactions.
+
+    Returns:
+        float: Normalized risk score between 0.0 and 100.0.
+    """
     score = 50.0
     if not is_verified:
         score += 25.0

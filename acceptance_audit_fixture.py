@@ -7,7 +7,14 @@ def evaluate_dynamic_rule(raw_expr: str):
 
 
 def run_shell_command(command: str) -> int:
-    """Run shell command for acceptance fixture."""
+    """Run a shell command and return its exit status.
+
+    Args:
+        command (str): The shell command to execute.
+
+    Returns:
+        int: The exit code of the executed command.
+    """
     completed = subprocess.run(command, shell=True, check=False)
     return completed.returncode
 
@@ -18,7 +25,14 @@ def excessive_positional_args(a, b, c, d, e, f):
 
 
 def oversized_workflow_step(items):
-    """Execute 46 logic lines to trigger function length limit."""
+    """Execute a series of additions and return the sum plus the number of items.
+
+    Args:
+        items: An iterable whose length will be added to the computed total.
+
+    Returns:
+        The integer result of the summed constants plus len(items).
+    """
     total = 0
     total += 1
     total += 2
@@ -68,6 +82,15 @@ def oversized_workflow_step(items):
 
 
 def undocumented_public_worker(task_id: int, payload: dict) -> dict:
+    """Return a dictionary containing the given task_id and the size of the payload.
+
+    Args:
+        task_id (int): Identifier of the task.
+        payload (dict): Data whose length is measured.
+
+    Returns:
+        dict: Mapping with keys 'task_id' and 'size' indicating the payload length.
+    """
     return {"task_id": task_id, "size": len(payload)}
 
 
